@@ -21,6 +21,8 @@ const _channel = AndroidNotificationChannel(
 );
 
 class PushNotificationService {
+  static void Function(String type, Map<String, dynamic> data)? onDataRefresh;
+
   final Ref _ref;
   PushNotificationService(this._ref);
 
@@ -58,6 +60,11 @@ class PushNotificationService {
           payload: message.data['type'],
         );
       }
+      // Trigger data refresh
+      PushNotificationService.onDataRefresh?.call(
+        message.data['type'] ?? '',
+        Map<String, dynamic>.from(message.data),
+      );
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
