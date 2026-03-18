@@ -8,4 +8,6 @@ class Endpoints {
   static const String walletPayment = '/agent/wallet-payment';
   static String agentCheckin(String tripId, String bookingId) => '/agent/trips/$tripId/checkin/$bookingId';
   static String agentBookingLookup(String ref) => '/agent/bookings/$ref';
+  static String agentBookingScan(String ref) => '/agent/bookings/scan/$ref';
+  static String agentBookingPay(String ref) => '/agent/bookings/$ref/pay';
 }
