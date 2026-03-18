@@ -10,4 +10,6 @@ class Endpoints {
   static String agentBookingLookup(String ref) => '/agent/bookings/$ref';
   static String agentBookingScan(String ref) => '/agent/bookings/scan/$ref';
   static String agentBookingPay(String ref) => '/agent/bookings/$ref/pay';
+  static const String registerDevice = '/notifications/register-device';
+  static const String unregisterDevice = '/notifications/unregister-device';
 }
