@@ -249,6 +249,7 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
   void _showSuccessOverlay(Map<String, dynamic> data) {
     final passengers = data['passengers'] as List? ?? [];
     final names = passengers.map((p) => p['name'] ?? '').join(', ');
+    final extraLuggage = data['booking']?['extra_luggage_count'] ?? 0;
 
     showGeneralDialog(
       context: context,
@@ -269,6 +270,10 @@ class _QRScannerScreenState extends ConsumerState<QRScannerScreen> {
                   passengers.map((p) => 'Seat ${p['seat_number'] ?? '?'}').join(', '),
                   style: const TextStyle(color: Colors.white60, fontSize: 14),
                 ),
+                if (extraLuggage > 0) ...[
+                  const SizedBox(height: 8),
+                  Text('🧳 Extra luggage: $extraLuggage bag${extraLuggage > 1 ? 's' : ''}', style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
+                ],
               ],
             ),
           ),
@@ -557,9 +562,41 @@ class _BookingActionSheet extends StatelessWidget {
                   const SizedBox(width: 6),
                   const Icon(Icons.check_circle, size: 16, color: AppTheme.success),
                 ],
+                if ((p['extra_luggage'] ?? 0) > 0) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                    child: Text('🧳 ×${p['extra_luggage']}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.primary)),
+                  ),
+                ],
               ],
             ),
           )),
+        ],
+
+        // Extra luggage
+        if ((booking['extra_luggage_count'] ?? 0) > 0) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppTheme.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppTheme.primary.withValues(alpha: 0.2)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('🧳', style: TextStyle(fontSize: 16)),
+                const SizedBox(width: 6),
+                Text(
+                  '${booking['extra_luggage_count']} Extra Bag${(booking['extra_luggage_count'] as int) > 1 ? 's' : ''} — Paid ✓',
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primary),
+                ),
+              ],
+            ),
+          ),
         ],
 
         // Customer
