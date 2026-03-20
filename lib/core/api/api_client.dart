@@ -26,6 +26,32 @@ class ApiClient {
     if (kDebugMode) _dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
   }
 
-  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) => _dio.get(path, queryParameters: queryParameters);
-  Future<Response> post(String path, {dynamic data}) => _dio.post(path, data: data);
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
+    try {
+      return await _dio.get(path, queryParameters: queryParameters);
+    } on DioException catch (e) {
+      throw _handleConnectionError(e);
+    }
+  }
+
+  Future<Response> post(String path, {dynamic data}) async {
+    try {
+      return await _dio.post(path, data: data);
+    } on DioException catch (e) {
+      throw _handleConnectionError(e);
+    }
+  }
+
+  DioException _handleConnectionError(DioException e) {
+    if (e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      return DioException(
+        requestOptions: e.requestOptions,
+        error: 'No internet connection. Please check your network.',
+        type: e.type,
+      );
+    }
+    return e;
+  }
 }
